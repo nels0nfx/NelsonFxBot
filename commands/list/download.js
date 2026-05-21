@@ -1,4 +1,4 @@
-const MediaDownloader = require('../../features/mediaDownloader');
+const AdvancedMediaDownloader = require('../../features/advancedMediaDownloader');
 
 module.exports = {
   name: 'download',
@@ -9,7 +9,7 @@ module.exports = {
 
     if (args.length === 0) {
       await sock.sendMessage(sender, {
-        text: `❌ Usage: ${config.prefix}download <URL>\n\nSupported platforms:\n✅ YouTube\n✅ TikTok\n✅ Instagram\n✅ Facebook\n✅ Twitter/X\n✅ Pinterest\n✅ SoundCloud\n✅ Spotify`,
+        text: `❌ Usage: ${config.prefix}download <URL>\n\nSupported platforms:\n✅ YouTube\n✅ TikTok\n✅ Instagram\n✅ Facebook\n✅ Twitter/X\n✅ SoundCloud\n✅ Spotify`,
       });
       return;
     }
@@ -28,12 +28,29 @@ module.exports = {
     await sock.sendPresenceUpdate('typing', sender);
 
     try {
-      const result = await MediaDownloader.getDownloadInfo(url);
+      const result = await AdvancedMediaDownloader.getDownloadInfo(url);
 
       if (result.success) {
+        let responseText = `✅ Download Info:\n\n`;
+        if (result.title) responseText += `📝 Title: ${result.title}\n`;
+        if (result.author) responseText += `👤 Author: ${result.author}\n`;
+        responseText += `\n${result.message}`;
+
         await sock.sendMessage(sender, {
-          text: `✅ Download successful!\n\n${result.message}`,
+          text: responseText,
         });
+
+        // Send thumbnail if available
+        if (result.thumbnail) {
+          try {
+            await sock.sendMessage(sender, {
+              image: { url: result.thumbnail },
+              caption: '📸 Thumbnail',
+            });
+          } catch (error) {
+            console.error('Error sending thumbnail:', error);
+          }
+        }
       } else {
         await sock.sendMessage(sender, {
           text: result.message,

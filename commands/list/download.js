@@ -1,4 +1,4 @@
-const AdvancedMediaDownloader = require('../../features/advancedMediaDownloader');
+const LightweightMediaDownloader = require('../../features/lightweightMediaDownloader');
 
 module.exports = {
   name: 'download',
@@ -28,7 +28,7 @@ module.exports = {
     await sock.sendPresenceUpdate('typing', sender);
 
     try {
-      const result = await AdvancedMediaDownloader.getDownloadInfo(url);
+      const result = await LightweightMediaDownloader.getDownloadInfo(url);
 
       if (result.success) {
         let responseText = `✅ Download Info:\n\n`;
